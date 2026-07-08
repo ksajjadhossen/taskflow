@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { Task } from "../../types/kanban";
 import Column from "./Column";
+import TaskViewModal from "./TaskViewModal";
 
 const INITIAL_COLUMNS = ["BACKLOG", "TODO", "IN PROGRESS", "REVIEW", "DONE"];
 
@@ -23,8 +24,9 @@ const DEFAULT_TASKS: any[] = [
 
 export default function Board() {
   const [tasks, setTasks] = useState<any[]>([]);
+  const [selectedTask, setSelectedTask] = useState<Task | null>(null);
 
-  useEffect(() => {
+  const loadTasks = () => {
     const savedTasks = localStorage.getItem("kanban_tasks");
     if (savedTasks) {
       setTasks(JSON.parse(savedTasks));
@@ -32,6 +34,10 @@ export default function Board() {
       localStorage.setItem("kanban_tasks", JSON.stringify(DEFAULT_TASKS));
       setTasks(DEFAULT_TASKS);
     }
+  };
+
+  useEffect(() => {
+    loadTasks();
 
     const handleStorageChange = () => {
       const updatedTasks = localStorage.getItem("kanban_tasks");
@@ -57,9 +63,24 @@ export default function Board() {
         );
 
         return (
-          <Column key={columnTitle} title={columnTitle} tasks={filteredTasks} />
+          <Column
+            key={columnTitle}
+            title={columnTitle}
+            status={columnTitle}
+            tasks={filteredTasks}
+            onCardClick={(task) => setSelectedTask(task)}
+            onTasksUpdate={loadTasks}
+          />
         );
       })}
+
+      <TaskViewModal
+        task={selectedTask}
+        onClose={() => {
+          setSelectedTask(null);
+          loadTasks();
+        }}
+      />
     </div>
   );
 }

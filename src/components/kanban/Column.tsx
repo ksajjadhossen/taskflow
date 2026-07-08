@@ -45,13 +45,17 @@ export default function Column({
   };
 
   const getHeaderBgColor = (colTitle: string) => {
+    if (!colTitle) {
+      return "bg-zinc-200 dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100";
+    }
+
     switch (colTitle.toUpperCase()) {
       case "BACKLOG":
         return "bg-zinc-500 text-white";
       case "TODO":
         return "bg-blue-600 text-white";
       case "IN PROGRESS":
-        return "bg-amber-500 text-black";
+        return "bg-amber-500 text-zinc-900";
       case "REVIEW":
         return "bg-teal-500 text-white";
       case "DONE":
@@ -67,13 +71,13 @@ export default function Column({
     <div
       onDragOver={handleDragOver}
       onDrop={handleDrop}
-      className="flex flex-col bg-zinc-950/40 w-full min-h-[500px] rounded-2xl border border-zinc-800/60 shadow-xs overflow-hidden"
+      className="flex flex-col bg-transparent w-full min-h-125 rounded-2xl border border-zinc-200 dark:border-zinc-800/60 shadow-xs overflow-hidden"
     >
       <div
         className={`flex items-center justify-between p-3.5 font-black uppercase tracking-wider text-sm ${headerBg}`}
       >
         <h3>{title}</h3>
-        <span className="text-[11px] font-black px-2 py-0.5 rounded-full bg-black/20 text-inherit border border-white/10">
+        <span className="text-[11px] font-black px-2 py-0.5 rounded-full bg-black/10 dark:bg-black/20 text-inherit border border-white/10">
           {tasks.length}
         </span>
       </div>
@@ -83,8 +87,8 @@ export default function Column({
           <Card key={task.id} task={task} onCardClick={onCardClick} />
         ))}
         {tasks.length === 0 && (
-          <div className="flex flex-col items-center justify-center border-2 border-dashed border-zinc-800/40 rounded-xl p-8 h-32">
-            <span className="text-xs font-bold text-zinc-600 uppercase tracking-wider">
+          <div className="flex flex-col items-center justify-center border-2 border-dashed border-zinc-200 dark:border-zinc-800/40 rounded-xl p-8 h-32">
+            <span className="text-xs font-bold text-zinc-400 dark:text-zinc-600 uppercase tracking-wider">
               Empty Column
             </span>
           </div>

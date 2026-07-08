@@ -1,22 +1,31 @@
 @import "tailwindcss";
+
+/* Tailwind v4 কে ডার্ক মোড ক্লাসের সাথে পরিচয় করিয়ে দেওয়া */
+@variant dark (&:where(.dark, .dark *));
+
+/* থিম ভ্যারিয়েবল এবং কনফিগারেশন */
 :root {
   --background: #ffffff;
-  --foreground: #000000;
+  --foreground: #09090b;
 }
+
 .dark {
   --background: #09090b;
   --foreground: #ffffff;
 }
+
+/* গ্লোবাল বেস স্টাইল */
 @layer base {
   html,
   body {
-    background-color: var(--background) !important;
-    color: var(--foreground) !important;
+    background-color: var(--background);
+    color: var(--foreground);
     min-height: 100vh;
     margin: 0;
     padding: 0;
     transition:
-      background-color 0.2s ease,
-      color 0.2s ease;
+      background-color 0.3s ease,
+      color 0.3s ease,
+      border-color 0.3s ease;
   }
 }

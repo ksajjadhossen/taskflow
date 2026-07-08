@@ -1,6 +1,10 @@
 "use client";
 
 import { useState } from "react";
+import { Priority } from "../../types/kanban";
+import InputField from "./InputField";
+import PrioritySelect from "./PrioritySelect";
+import LabelsSelect from "./LabelsSelect";
 
 interface TaskModalProps {
   isOpen: boolean;
@@ -9,7 +13,9 @@ interface TaskModalProps {
     title: string;
     description: string;
     assignee: string;
-    priority: string;
+    priority: Priority;
+    labels: string[];
+    dueDate: string;
   }) => void;
 }
 
@@ -18,14 +24,18 @@ export default function TaskModal({
   onClose,
   onAddTask,
 }: TaskModalProps) {
-  const [title, setTitle] = useState("");
-  const [description, setDescription] = useState("");
-  const [assignee, setAssignee] = useState("");
-  const [priority, setPriority] = useState("MEDIUM");
+  const [title, setTitle] = useState<string>("");
+  const [description, setDescription] = useState<string>("");
+  const [assignee, setAssignee] = useState<string>("");
+  const [priority, setPriority] = useState<Priority>("Medium");
+  const [labels, setLabels] = useState<string[]>([]);
+  const [dueDate, setDueDate] = useState<string>(
+    new Date().toISOString().split("T")[0],
+  );
 
   if (!isOpen) return null;
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (!title.trim() || !description.trim()) return;
 
@@ -34,12 +44,16 @@ export default function TaskModal({
       description,
       assignee: assignee.trim() || "Unassigned",
       priority,
+      labels,
+      dueDate,
     });
 
     setTitle("");
     setDescription("");
     setAssignee("");
-    setPriority("MEDIUM");
+    setPriority("Medium");
+    setLabels([]);
+    setDueDate(new Date().toISOString().split("T")[0]);
     onClose();
   };
 
@@ -51,6 +65,7 @@ export default function TaskModal({
             Create New Task
           </h2>
           <button
+            type="button"
             onClick={onClose}
             className="text-zinc-400 hover:text-black dark:hover:text-white font-bold text-sm cursor-pointer"
           >
@@ -59,67 +74,54 @@ export default function TaskModal({
         </div>
 
         <form onSubmit={handleSubmit} className="flex flex-col gap-4">
-          <div>
-            <label className="block text-[11px] font-black uppercase tracking-wider text-zinc-700 dark:text-zinc-300 mb-1.5">
-              Task Title
-            </label>
-            <input
-              type="text"
-              required
-              value={title}
-              onChange={(e) => setTitle(e.target.value)}
-              placeholder="Enter task title..."
-              className="w-full px-4 py-2.5 text-sm rounded-xl border border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-950 text-black dark:text-white font-semibold focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
-          </div>
+          <InputField
+            label="Task Title"
+            required
+            value={title}
+            onChange={setTitle}
+            placeholder="Enter task title..."
+          />
 
           <div>
-            <label className="block text-[11px] font-black uppercase tracking-wider text-zinc-700 dark:text-zinc-300 mb-1.5">
-              Description
-            </label>
-            <textarea
+            <InputField
+              label="Description"
+              type="textarea"
               required
-              rows={3}
               value={description}
-              onChange={(e) => setDescription(e.target.value)}
-              placeholder="Describe the task details..."
-              className="w-full px-4 py-2.5 text-sm rounded-xl border border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-950 text-black dark:text-white font-semibold focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
+              onChange={setDescription}
+              placeholder="Describe details..."
+            />
+            <span className="text-[9px] text-zinc-400 font-bold block mt-1">
+              Tip: Rich text representation via clean layout.
+            </span>
+          </div>
+
+          <div className="grid grid-cols-2 gap-4">
+            <InputField
+              label="Assignee Name"
+              value={assignee}
+              onChange={setAssignee}
+              placeholder="Name"
+            />
+            <InputField
+              label="Due Date"
+              value={dueDate}
+              onChange={setDueDate}
+              placeholder="YYYY-MM-DD"
             />
           </div>
 
           <div className="grid grid-cols-2 gap-4">
-            <div>
-              <label className="block text-[11px] font-black uppercase tracking-wider text-zinc-700 dark:text-zinc-300 mb-1.5">
-                Assignee
-              </label>
-              <input
-                type="text"
-                value={assignee}
-                onChange={(e) => setAssignee(e.target.value)}
-                placeholder="Name"
-                className="w-full px-4 py-2.5 text-sm rounded-xl border border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-950 text-black dark:text-white font-semibold focus:outline-none focus:ring-2 focus:ring-blue-500"
-              />
-            </div>
-
-            <div>
-              <label className="block text-[11px] font-black uppercase tracking-wider text-zinc-700 dark:text-zinc-300 mb-1.5">
-                Priority
-              </label>
-              <select
-                value={priority}
-                onChange={(e) => setPriority(e.target.value)}
-                className="w-full px-4 py-2.5 text-sm rounded-xl border border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-950 text-black dark:text-white font-semibold focus:outline-none focus:ring-2 focus:ring-blue-500 cursor-pointer"
-              >
-                <option value="LOW">LOW</option>
-                <option value="MEDIUM">MEDIUM</option>
-                <option value="HIGH">HIGH</option>
-              </select>
-            </div>
+            <PrioritySelect
+              value={priority}
+              onChange={(val) => setPriority(val as Priority)}
+            />
+            <LabelsSelect selectedLabels={labels} onChange={setLabels} />
           </div>
 
           <button
             type="submit"
-            className="w-full mt-2 py-3 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl transition-all shadow-md active:scale-[0.98] cursor-pointer text-xs uppercase tracking-wider"
+            className="w-full mt-2 py-3 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl transition-all shadow-md cursor-pointer text-xs uppercase tracking-wider"
           >
             Add to Todo
           </button>

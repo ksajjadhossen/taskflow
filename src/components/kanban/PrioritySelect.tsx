@@ -1,7 +1,10 @@
+// src/components/kanban/PrioritySelect.tsx
 "use client";
 
+import { Priority } from "../../types/kanban";
+
 interface PrioritySelectProps {
-  value: string;
+  value: Priority;
   onChange: (val: string) => void;
 }
 
@@ -19,9 +22,9 @@ export default function PrioritySelect({
         onChange={(e) => onChange(e.target.value)}
         className="w-full px-4 py-2.5 text-sm rounded-xl border border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-950 text-black dark:text-white font-semibold focus:outline-none focus:ring-2 focus:ring-blue-500 cursor-pointer"
       >
-        <option value="LOW">LOW</option>
-        <option value="MEDIUM">MEDIUM</option>
-        <option value="HIGH">HIGH</option>
+        <option value="Low">LOW</option>
+        <option value="Medium">MEDIUM</option>
+        <option value="High">HIGH</option>
       </select>
     </div>
   );

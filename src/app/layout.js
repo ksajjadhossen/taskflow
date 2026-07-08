@@ -13,7 +13,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata = {
-  title: "Workspace Kanban Board",
+  title: "TaskFlow - Minimal Task Management Dashboard",
   description: "A minimal task management dashboard",
 };
 

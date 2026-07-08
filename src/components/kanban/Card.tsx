@@ -13,7 +13,7 @@ export default function Card({ task, onCardClick }: CardProps) {
       case "HIGH":
         return {
           cardBg:
-            "bg-teal-50/60 dark:bg-teal-950/20 border-teal-600/40 dark:border-teal-500/30",
+            "bg-teal-50/75 dark:bg-teal-950/20 border-teal-200 dark:border-teal-500/30",
           badgeBg:
             "bg-rose-500/10 text-rose-600 dark:text-rose-400 border-rose-500/20",
           textColor: "text-teal-950 dark:text-teal-100",
@@ -21,7 +21,7 @@ export default function Card({ task, onCardClick }: CardProps) {
       case "MEDIUM":
         return {
           cardBg:
-            "bg-purple-50/60 dark:bg-purple-950/20 border-purple-600/40 dark:border-purple-500/30",
+            "bg-purple-50/75 dark:bg-purple-950/20 border-purple-200 dark:border-purple-500/30",
           badgeBg:
             "bg-amber-500/10 text-amber-600 dark:text-amber-400 border-amber-500/20",
           textColor: "text-purple-950 dark:text-purple-100",
@@ -29,7 +29,7 @@ export default function Card({ task, onCardClick }: CardProps) {
       default:
         return {
           cardBg:
-            "bg-blue-50/40 dark:bg-blue-950/10 border-blue-200 dark:border-blue-900/50",
+            "bg-blue-50/60 dark:bg-blue-950/10 border-blue-100 dark:border-blue-900/50",
           badgeBg:
             "bg-zinc-500/10 text-zinc-600 dark:text-zinc-400 border-zinc-500/20",
           textColor: "text-zinc-900 dark:text-zinc-100",
@@ -58,6 +58,7 @@ export default function Card({ task, onCardClick }: CardProps) {
   const handleDragStart = (e: React.DragEvent) => {
     e.dataTransfer.setData("text/plain", task.id);
   };
+  console.log("here is the task", task);
 
   const assigneeName = getAssigneeName();
   const avatarLetter = assigneeName.charAt(0).toUpperCase();
@@ -128,7 +129,7 @@ export default function Card({ task, onCardClick }: CardProps) {
         {task.description}
       </p>
 
-      <div className="w-full h-px bg-black/5 dark:bg-white/5 mb-3" />
+      <div className="w-full h-px bg-zinc-200/60 dark:bg-white/5 mb-3" />
 
       <div className="flex items-center justify-between gap-2">
         <div className="flex items-center gap-1.5 min-w-0">
@@ -143,7 +144,7 @@ export default function Card({ task, onCardClick }: CardProps) {
         </div>
 
         {task.dueDate && (
-          <div className="flex items-center gap-1 text-[10px] font-bold text-zinc-500 dark:text-zinc-400/85 bg-zinc-100/50 dark:bg-zinc-800/40 px-1.5 py-0.5 rounded-md border border-zinc-200/40 dark:border-zinc-700/30 shrink-0">
+          <div className="flex items-center gap-1 text-[10px] font-bold text-zinc-500 dark:text-zinc-400/85 bg-zinc-100/60 dark:bg-zinc-800/40 px-1.5 py-0.5 rounded-md border border-zinc-200/60 dark:border-zinc-700/30 shrink-0">
             <svg
               xmlns="http://www.w3.org/2000/svg"
               fill="none"
@@ -155,13 +156,12 @@ export default function Card({ task, onCardClick }: CardProps) {
               <path
                 strokeLinecap="round"
                 strokeLinejoin="round"
-                d="M6.75 3v2.25M17.25 3v2.25M3v18.75h18V7.5H3v13.25zm2.25-10.5h13.5"
+                d="M6.75 3v2.25M17.25 3v2.25M3 18.75h18V7.5H3v13.25zm2.25-10.5h13.5"
               />
             </svg>
             <span>{task.dueDate}</span>
           </div>
         )}
-
         <span
           className={`text-[9px] font-black tracking-widest uppercase px-1.5 py-0.5 rounded-md border shrink-0 ${styles.badgeBg}`}
         >

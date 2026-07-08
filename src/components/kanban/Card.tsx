@@ -1,55 +1,89 @@
 "use client";
 
-import { useState, useEffect } from "react";
 import { Task } from "../../types/kanban";
 
 interface CardProps {
   task: Task;
 }
-export default function Card({ task }: CardProps) {
-  const [mounted, setMounted] = useState(false);
 
-  useEffect(() => {
-    setMounted(true);
-  }, []);
-  const getPriorityStyle = (priority: string) => {
-    switch (priority) {
-      case "High":
-        return "bg-rose-600 text-white dark:bg-rose-500";
-      case "Medium":
-        return "bg-amber-600 text-white dark:bg-amber-500";
+export default function Card({ task }: CardProps) {
+  const getPriorityStyles = (priority: string) => {
+    switch (priority?.toUpperCase()) {
+      case "HIGH":
+        return {
+          cardBg:
+            "bg-teal-50/60 dark:bg-teal-950/20 border-teal-600/40 dark:border-teal-500/30",
+          badgeBg:
+            "bg-rose-500/10 text-rose-600 dark:text-rose-400 border-rose-500/20",
+          textColor: "text-teal-950 dark:text-teal-100",
+          descColor: "text-teal-800/80 dark:text-teal-300/70",
+        };
+      case "MEDIUM":
+        return {
+          cardBg:
+            "bg-purple-50/60 dark:bg-purple-950/20 border-purple-600/40 dark:border-purple-500/30",
+          badgeBg:
+            "bg-amber-500/10 text-amber-600 dark:text-amber-400 border-amber-500/20",
+          textColor: "text-purple-950 dark:text-purple-100",
+          descColor: "text-purple-800/80 dark:text-purple-300/70",
+        };
       default:
-        return "bg-blue-600 text-white dark:bg-blue-500";
+        return {
+          cardBg:
+            "bg-blue-50/40 dark:bg-blue-950/10 border-blue-200 dark:border-blue-900/50",
+          badgeBg:
+            "bg-zinc-500/10 text-zinc-600 dark:text-zinc-400 border-zinc-500/20",
+          textColor: "text-zinc-900 dark:text-zinc-100",
+          descColor: "text-zinc-600 dark:text-zinc-400",
+        };
     }
   };
 
-  if (!mounted) {
-    return (
-      <div className="p-4 rounded-xl border border-neutral-200 dark:border-neutral-800 bg-white dark:bg-neutral-900 animate-pulse h-32" />
-    );
-  }
+  const styles = getPriorityStyles(task.priority);
+
+  const getAssigneeName = (): string => {
+    if (!task.assignee) return "Unassigned";
+    if (typeof task.assignee === "object" && "name" in task.assignee) {
+      return String(task.assignee.name);
+    }
+    return String(task.assignee);
+  };
+
+  const assigneeName = getAssigneeName();
+  const avatarLetter = assigneeName.charAt(0).toUpperCase();
+
   return (
-    <div className="p-4 rounded-xl bg-white dark:bg-neutral-900 border border-neutral-300 dark:border-neutral-800 shadow-sm transition-all hover:shadow-md hover:border-neutral-400 dark:hover:border-neutral-700 cursor-grab active:cursor-grabbing">
-      <h4 className="font-bold text-sm tracking-tight mb-1 text-black dark:text-white">
+    <div
+      className={`flex flex-col p-4 rounded-xl border transition-all duration-200 shadow-xs hover:shadow-md ${styles.cardBg}`}
+    >
+      <h4
+        className={`font-black text-sm tracking-tight mb-1.5 ${styles.textColor}`}
+      >
         {task.title}
       </h4>
 
-      <p className="text-xs text-neutral-900 dark:text-neutral-200 line-clamp-3 mb-4 font-medium leading-relaxed">
+      <p
+        className={`text-xs font-semibold leading-relaxed mb-4 ${styles.descColor}`}
+      >
         {task.description}
       </p>
-      {/* Divider and Footer */}
-      <div className="flex items-center justify-between border-t border-neutral-200 dark:border-neutral-800 pt-3 text-[11px] font-bold">
-        {/* User Assignee Badge */}
-        <div className="flex items-center gap-1.5">
-          <div className="h-5 w-5 rounded-full bg-black text-white dark:bg-white dark:text-black flex items-center justify-center font-extrabold text-[9px]">
-            {task.assignee.name.charAt(0).toUpperCase()}
+
+      <div className="w-full h-px bg-black/5 dark:bg-white/5 mb-3" />
+
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-2">
+          <div className="h-6 w-6 rounded-full bg-zinc-900 dark:bg-zinc-100 text-white dark:text-zinc-900 flex items-center justify-center text-[10px] font-black border border-zinc-200 dark:border-zinc-800 shadow-xs">
+            {avatarLetter}
           </div>
-          <span className="text-black dark:text-white font-semibold">
-            {task.assignee.name}
+          <span
+            className={`text-xs font-black tracking-wide ${styles.textColor}`}
+          >
+            {assigneeName}
           </span>
         </div>
+
         <span
-          className={`px-2 py-0.5 rounded-md text-[9px] uppercase font-black tracking-wider ${getPriorityStyle(task.priority)}`}
+          className={`text-[9px] font-black tracking-widest uppercase px-2 py-0.5 rounded-md border ${styles.badgeBg}`}
         >
           {task.priority}
         </span>

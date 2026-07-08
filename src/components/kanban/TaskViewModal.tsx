@@ -1,6 +1,9 @@
 "use client";
 
+import { useState, useEffect } from "react";
 import { Task } from "../../types/kanban";
+import InputField from "./InputField";
+import PrioritySelect from "./PrioritySelect";
 
 interface TaskViewModalProps {
   task: Task | null;
@@ -8,21 +11,58 @@ interface TaskViewModalProps {
 }
 
 export default function TaskViewModal({ task, onClose }: TaskViewModalProps) {
+  const [title, setTitle] = useState("");
+  const [description, setDescription] = useState("");
+  const [assignee, setAssignee] = useState("");
+  const [priority, setPriority] = useState("MEDIUM");
+
+  useEffect(() => {
+    if (task) {
+      setTitle(task.title);
+      setDescription(task.description);
+      const name =
+        typeof task.assignee === "object" && "name" in task.assignee
+          ? task.assignee.name
+          : String(task.assignee || "");
+      setAssignee(name);
+      setPriority(task.priority?.toUpperCase() || "MEDIUM");
+    }
+  }, [task]);
+
   if (!task) return null;
 
-  const assigneeName =
-    typeof task.assignee === "object" && "name" in task.assignee
-      ? task.assignee.name
-      : String(task.assignee || "Unassigned");
-  const avatarLetter = assigneeName.charAt(0).toUpperCase();
+  const handleSave = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!title.trim() || !description.trim()) return;
+
+    const currentTasks = JSON.parse(
+      localStorage.getItem("kanban_tasks") || "[]",
+    );
+    const updatedTasks = currentTasks.map((t: any) => {
+      if (t.id === task.id) {
+        return {
+          ...t,
+          title: title.trim(),
+          description: description.trim(),
+          assignee: { ...t.assignee, name: assignee.trim() || "Unassigned" },
+          priority:
+            priority.charAt(0).toUpperCase() + priority.slice(1).toLowerCase(),
+        };
+      }
+      return t;
+    });
+
+    localStorage.setItem("kanban_tasks", JSON.stringify(updatedTasks));
+    onClose();
+  };
 
   return (
     <div className="fixed inset-0 bg-neutral-900/60 dark:bg-black/80 backdrop-blur-md flex items-center justify-center z-50 p-4">
       <div className="bg-white dark:bg-zinc-900 w-full max-w-md rounded-2xl p-6 border border-zinc-200 dark:border-zinc-800 shadow-2xl">
-        <div className="flex justify-between items-start mb-4">
-          <span className="text-[10px] font-black tracking-widest uppercase px-2.5 py-1 rounded-md bg-zinc-100 dark:bg-zinc-800 text-zinc-800 dark:text-zinc-200 border border-zinc-200 dark:border-zinc-700">
-            {task.priority} Priority
-          </span>
+        <div className="flex justify-between items-center mb-5">
+          <h2 className="text-xl font-black text-black dark:text-white tracking-tight">
+            Edit Task Details
+          </h2>
           <button
             onClick={onClose}
             className="text-zinc-400 hover:text-black dark:hover:text-white font-bold text-sm cursor-pointer"
@@ -31,37 +71,48 @@ export default function TaskViewModal({ task, onClose }: TaskViewModalProps) {
           </button>
         </div>
 
-        <h2 className="text-xl font-black text-black dark:text-white tracking-tight mb-2">
-          {task.title}
-        </h2>
-        <p className="text-sm font-semibold text-zinc-600 dark:text-zinc-400 leading-relaxed mb-6 bg-zinc-50 dark:bg-zinc-950 p-4 rounded-xl border border-zinc-100 dark:border-zinc-900">
-          {task.description}
-        </p>
+        <form onSubmit={handleSave} className="flex flex-col gap-4">
+          <InputField
+            label="Task Title"
+            required
+            value={title}
+            onChange={setTitle}
+          />
 
-        <div className="flex items-center justify-between border-t border-zinc-100 dark:border-zinc-800 pt-4">
-          <div className="flex items-center gap-2">
-            <div className="h-7 w-7 rounded-full bg-zinc-900 dark:bg-zinc-100 text-white dark:text-zinc-900 flex items-center justify-center text-xs font-black">
-              {avatarLetter}
-            </div>
-            <div>
-              <p className="text-[10px] text-zinc-400 font-bold uppercase tracking-wider">
-                Assignee
-              </p>
-              <p className="text-xs font-black text-zinc-800 dark:text-zinc-200">
-                {assigneeName}
-              </p>
-            </div>
+          <InputField
+            label="Description"
+            type="textarea"
+            required
+            value={description}
+            onChange={setDescription}
+          />
+
+          <div className="grid grid-cols-2 gap-4">
+            <InputField
+              label="Assignee"
+              value={assignee}
+              onChange={setAssignee}
+              placeholder="Name"
+            />
+            <PrioritySelect value={priority} onChange={setPriority} />
           </div>
 
-          <div className="text-right">
-            <p className="text-[10px] text-zinc-400 font-bold uppercase tracking-wider">
-              Due Date
-            </p>
-            <p className="text-xs font-black text-zinc-800 dark:text-zinc-200">
-              {task.dueDate || "No Date"}
-            </p>
+          <div className="flex gap-3 mt-2">
+            <button
+              type="button"
+              onClick={onClose}
+              className="flex-1 py-3 bg-zinc-100 dark:bg-zinc-800 hover:bg-zinc-200 dark:hover:bg-zinc-700 text-zinc-700 dark:text-zinc-300 font-bold rounded-xl transition-all cursor-pointer text-xs uppercase tracking-wider"
+            >
+              Cancel
+            </button>
+            <button
+              type="submit"
+              className="flex-1 py-3 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl transition-all shadow-md active:scale-[0.98] cursor-pointer text-xs uppercase tracking-wider"
+            >
+              Save Changes
+            </button>
           </div>
-        </div>
+        </form>
       </div>
     </div>
   );

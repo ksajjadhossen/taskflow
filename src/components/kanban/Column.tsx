@@ -1,7 +1,9 @@
-// src/components/kanban/Column.tsx
+"use client";
 
+import { useState } from "react";
 import { Task } from "../../types/kanban";
 import Card from "./Card";
+import TaskViewModal from "./TaskViewModal";
 
 interface ColumnProps {
   title: string;
@@ -9,6 +11,8 @@ interface ColumnProps {
 }
 
 export default function Column({ title, tasks }: ColumnProps) {
+  const [selectedTask, setSelectedTask] = useState<Task | null>(null);
+
   const getHeaderStyles = (columnTitle: string) => {
     switch (columnTitle?.toUpperCase()) {
       case "BACKLOG":
@@ -35,7 +39,6 @@ export default function Column({ title, tasks }: ColumnProps) {
         className={`flex items-center justify-between px-4 py-3.5 mb-4 ${headerBgClass}`}
       >
         <h3 className="text-xs tracking-wider uppercase">{title}</h3>
-
         <span className="text-xs font-black px-2.5 py-0.5 rounded-md bg-black/15 border border-black/5">
           {tasks.length}
         </span>
@@ -49,9 +52,20 @@ export default function Column({ title, tasks }: ColumnProps) {
             </span>
           </div>
         ) : (
-          tasks.map((task) => <Card key={task.id} task={task} />)
+          tasks.map((task) => (
+            <Card
+              key={task.id}
+              task={task}
+              onCardClick={(t) => setSelectedTask(t)}
+            />
+          ))
         )}
       </div>
+
+      <TaskViewModal
+        task={selectedTask}
+        onClose={() => setSelectedTask(null)}
+      />
     </div>
   );
 }

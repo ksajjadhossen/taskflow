@@ -1,53 +1,66 @@
+// src/components/kanban/Board.tsx
 "use client";
 
-import { useState } from "react";
-
-import Column from "./Column";
+import { useState, useEffect } from "react";
 import { Task } from "../../types/kanban";
-import { getRandomPastelColor } from "../../lib/utils";
+import Column from "./Column";
 
-// Simple initial mock dataset to test components out
-const initialTasks: Task[] = [
+const INITIAL_COLUMNS = ["BACKLOG", "TODO", "IN PROGRESS", "REVIEW", "DONE"];
+
+const DEFAULT_TASKS: any[] = [
   {
-    id: "1",
-    title: "Setup project with TypeScript",
+    id: "task-1",
+    title: "Welcome to Kanban Board",
     description:
-      "Convert initial setup javascript files to typescript configurations.",
+      "This is a default task. Try adding a new task from the top button!",
+    status: "TODO",
     assignee: { name: "Sajjad", avatar: "" },
-    labels: ["Setup"],
-    dueDate: "2026-07-10",
-    priority: "High",
-    bgColor: getRandomPastelColor(),
-  },
-  {
-    id: "2",
-    title: "Design Minimal Navbar",
-    description:
-      "Build a light and dark mode togglable responsive header navbar component.",
-    assignee: { name: "Anik", avatar: "" },
-    labels: ["UI"],
-    dueDate: "2026-07-12",
+    labels: [],
+    dueDate: new Date().toISOString().split("T")[0],
     priority: "Medium",
-    bgColor: getRandomPastelColor(),
+    bgColor: "",
   },
 ];
 
 export default function Board() {
-  const [tasks] = useState<Task[]>(initialTasks);
+  const [tasks, setTasks] = useState<any[]>([]);
 
-  // Group columns basic filter layout
-  const getTasksByStatus = (status: string) => {
-    if (status === "todo") return tasks; // Place mock tasks in Todo for display testing
-    return [];
-  };
+  useEffect(() => {
+    const savedTasks = localStorage.getItem("kanban_tasks");
+    if (savedTasks) {
+      setTasks(JSON.parse(savedTasks));
+    } else {
+      localStorage.setItem("kanban_tasks", JSON.stringify(DEFAULT_TASKS));
+      setTasks(DEFAULT_TASKS);
+    }
+
+    const handleStorageChange = () => {
+      const updatedTasks = localStorage.getItem("kanban_tasks");
+      if (updatedTasks) {
+        setTasks(JSON.parse(updatedTasks));
+      }
+    };
+
+    window.addEventListener("storage", handleStorageChange);
+    const interval = setInterval(handleStorageChange, 500);
+
+    return () => {
+      window.removeEventListener("storage", handleStorageChange);
+      clearInterval(interval);
+    };
+  }, []);
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-4 items-start">
-      <Column title="Backlog" tasks={getTasksByStatus("backlog")} />
-      <Column title="Todo" tasks={getTasksByStatus("todo")} />
-      <Column title="In Progress" tasks={getTasksByStatus("in-progress")} />
-      <Column title="Review" tasks={getTasksByStatus("review")} />
-      <Column title="Done" tasks={getTasksByStatus("done")} />
+    <div className="grid grid-cols-1 md:grid-cols-3 xl:grid-cols-5 gap-5 items-start mt-4">
+      {INITIAL_COLUMNS.map((columnTitle) => {
+        const filteredTasks = tasks.filter(
+          (task) => (task.status || "TODO").toUpperCase() === columnTitle,
+        );
+
+        return (
+          <Column key={columnTitle} title={columnTitle} tasks={filteredTasks} />
+        );
+      })}
     </div>
   );
 }

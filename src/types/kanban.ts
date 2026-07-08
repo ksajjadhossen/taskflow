@@ -1,5 +1,3 @@
-// src/types/kanban.ts
-
 export type Priority = "Low" | "Medium" | "High";
 
 export interface Assignee {

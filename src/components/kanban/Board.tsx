@@ -6,6 +6,7 @@ import Column from "./Column";
 import TaskViewModal from "./TaskViewModal";
 import TaskModal from "./TaskModal";
 import { useKeyboardShortcuts } from "../../hooks/useKeyboardShortcuts";
+import { useUndoRedo } from "../../hooks/useUndoRedo";
 
 const INITIAL_COLUMNS = ["BACKLOG", "TODO", "IN PROGRESS", "REVIEW", "DONE"];
 
@@ -25,7 +26,16 @@ const DEFAULT_TASKS: any[] = [
 ];
 
 export default function Board() {
-  const [tasks, setTasks] = useState<any[]>([]);
+  const {
+    state: tasks,
+    setState: setTasks,
+    updateState,
+    undo,
+    redo,
+    canUndo,
+    canRedo,
+  } = useUndoRedo<any[]>([]);
+
   const [selectedTask, setSelectedTask] = useState<Task | null>(null);
   const [isNewTaskModalOpen, setIsNewTaskModalOpen] = useState(false);
 
@@ -44,6 +54,16 @@ export default function Board() {
   useEffect(() => {
     loadTasks();
   }, []);
+
+  const handleTasksUpdateFromColumn = () => {
+    if (typeof window !== "undefined") {
+      const savedTasks = localStorage.getItem("kanban_tasks");
+      if (savedTasks) {
+        const parsed = JSON.parse(savedTasks);
+        updateState(parsed);
+      }
+    }
+  };
 
   const handleAddTask = (newTask: {
     title: string;
@@ -71,10 +91,29 @@ export default function Board() {
 
     const updated = [...currentTasks, taskToSave];
     localStorage.setItem("kanban_tasks", JSON.stringify(updated));
-    loadTasks();
+    updateState(updated);
   };
 
-  // ⚡ শর্টকাটের জন্য হ্যান্ডলার ফাংশন তৈরি
+  useEffect(() => {
+    const handleUndoRedoKeys = (e: KeyboardEvent) => {
+      if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "z") {
+        e.preventDefault();
+        const prevState = undo();
+        if (prevState)
+          localStorage.setItem("kanban_tasks", JSON.stringify(prevState));
+      }
+      if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "y") {
+        e.preventDefault();
+        const nextState = redo();
+        if (nextState)
+          localStorage.setItem("kanban_tasks", JSON.stringify(nextState));
+      }
+    };
+
+    window.addEventListener("keydown", handleUndoRedoKeys);
+    return () => window.removeEventListener("keydown", handleUndoRedoKeys);
+  }, [undo, redo]);
+
   const handleNewTaskShortcut = useCallback(() => {
     setIsNewTaskModalOpen(true);
   }, []);
@@ -84,7 +123,6 @@ export default function Board() {
     setIsNewTaskModalOpen(false);
   }, []);
 
-  // ⚡ কীবোর্ড শর্টকাট হুক কল করা হলো
   useKeyboardShortcuts({
     onNewTask: handleNewTaskShortcut,
     onCloseModals: handleCloseModalsShortcut,
@@ -92,11 +130,35 @@ export default function Board() {
 
   return (
     <div className="w-full">
-      {/* 💡 পরিবর্তন এখানে: flex justify-end ব্যবহার করে বাটনকে ডান দিকে নেওয়া হয়েছে */}
-      <div className="w-full mb-4 flex justify-end items-end">
+      <div className="w-full mb-4 flex justify-between items-center">
+        <div className="flex gap-2">
+          <button
+            disabled={!canUndo}
+            onClick={() => {
+              const prev = undo();
+              if (prev)
+                localStorage.setItem("kanban_tasks", JSON.stringify(prev));
+            }}
+            className="px-3 py-1.5 text-xs font-bold rounded bg-zinc-100 dark:bg-zinc-800 disabled:opacity-40 cursor-pointer"
+          >
+            ↩ Undo
+          </button>
+          <button
+            disabled={!canRedo}
+            onClick={() => {
+              const next = redo();
+              if (next)
+                localStorage.setItem("kanban_tasks", JSON.stringify(next));
+            }}
+            className="px-3 py-1.5 text-xs font-bold rounded bg-zinc-100 dark:bg-zinc-800 disabled:opacity-40 cursor-pointer"
+          >
+            ↪ Redo
+          </button>
+        </div>
+
         <button
           onClick={() => setIsNewTaskModalOpen(true)}
-          className="px-5 py-2.5 text-xs bg-blue-600 dark:bg-blue-500 text-white font-bold rounded-sm hover:bg-blue-700 dark:hover:bg-blue-600 transition-all cursor-pointer shadow-md shadow-blue-500/10 active:scale-95 flex items-center gap-1"
+          className="px-5 py-2.5 text-xs bg-blue-600 dark:bg-blue-500 text-white font-bold rounded-sm hover:bg-blue-700 dark:hover:bg-blue-600 transition-all cursor-pointer shadow-md flex items-center gap-1"
         >
           <span className="text-sm font-black">+</span> New Task
         </button>
@@ -115,7 +177,7 @@ export default function Board() {
               status={columnTitle}
               tasks={filteredTasks}
               onCardClick={(task) => setSelectedTask(task)}
-              onTasksUpdate={loadTasks}
+              onTasksUpdate={handleTasksUpdateFromColumn}
             />
           );
         })}
@@ -130,7 +192,7 @@ export default function Board() {
           task={selectedTask}
           onClose={() => {
             setSelectedTask(null);
-            loadTasks();
+            handleTasksUpdateFromColumn();
           }}
         />
       </div>

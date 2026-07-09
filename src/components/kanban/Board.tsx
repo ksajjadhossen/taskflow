@@ -1,139 +1,107 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState } from "react";
 import { Task } from "../../types/kanban";
-import Column from "./Column";
-import TaskViewModal from "./TaskViewModal";
-import TaskModal from "./TaskModal";
-import { useKeyboardShortcuts } from "../../hooks/useKeyboardShortcuts";
-import { useBoardData } from "../../hooks/useBoardData";
+import Card from "./Card";
 
-const INITIAL_COLUMNS = ["BACKLOG", "TODO", "IN PROGRESS", "REVIEW", "DONE"];
+interface ColumnProps {
+  title: string;
+  status: string;
+  tasks: Task[];
+  onCardClick: (task: Task) => void;
+  onTasksUpdate: () => void;
+}
 
-export default function Board() {
-  const {
-    tasks,
-    handleAddTask,
-    syncStorage,
-    exportBoard,
-    importBoard,
-    fileInputRef,
-    undo,
-    redo,
-    canUndo,
-    canRedo,
-  } = useBoardData();
-  const [selectedTask, setSelectedTask] = useState<Task | null>(null);
-  const [isNewTaskModalOpen, setIsNewTaskModalOpen] = useState(false);
+export default function Column({
+  title,
+  status,
+  tasks,
+  onCardClick,
+  onTasksUpdate,
+}: ColumnProps) {
+  const [visibleCount, setVisibleCount] = useState(20);
 
-  useEffect(() => {
-    const handleUndoRedoKeys = (e: KeyboardEvent) => {
-      if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "z") {
-        e.preventDefault();
-        const prev = undo();
-        if (prev) localStorage.setItem("kanban_tasks", JSON.stringify(prev));
-      }
-      if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "y") {
-        e.preventDefault();
-        const next = redo();
-        if (next) localStorage.setItem("kanban_tasks", JSON.stringify(next));
-      }
-    };
-    window.addEventListener("keydown", handleUndoRedoKeys);
-    return () => window.removeEventListener("keydown", handleUndoRedoKeys);
-  }, [undo, redo]);
+  const handleDragOver = (e: React.DragEvent) => e.preventDefault();
 
-  useKeyboardShortcuts({
-    onNewTask: useCallback(() => setIsNewTaskModalOpen(true), []),
-    onCloseModals: useCallback(() => {
-      setSelectedTask(null);
-      setIsNewTaskModalOpen(false);
-    }, []),
-  });
+  const handleDrop = (e: React.DragEvent) => {
+    e.preventDefault();
+    const taskId = e.dataTransfer.getData("text/plain");
+    if (!taskId) return;
+
+    const currentTasks: Task[] = JSON.parse(
+      localStorage.getItem("kanban_tasks") || "[]",
+    );
+    const updatedTasks = currentTasks.map((t) =>
+      t.id === taskId ? { ...t, status } : t,
+    );
+
+    localStorage.setItem("kanban_tasks", JSON.stringify(updatedTasks));
+    onTasksUpdate();
+  };
+
+  const getHeaderBgColor = (colTitle: string) => {
+    if (!colTitle)
+      return "bg-zinc-200 dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100";
+    switch (colTitle.toUpperCase()) {
+      case "BACKLOG":
+        return "bg-zinc-500 text-white";
+      case "TODO":
+        return "bg-blue-600 text-white";
+      case "IN PROGRESS":
+        return "bg-orange-500 text-white";
+      case "REVIEW":
+        return "bg-teal-500 text-white";
+      case "DONE":
+        return "bg-emerald-600 text-white";
+      default:
+        return "bg-zinc-200 dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100";
+    }
+  };
+
+  const visibleTasks = tasks.slice(0, visibleCount);
 
   return (
-    <div className="w-full">
-      <div className="w-full mb-4 flex justify-between items-center flex-wrap gap-3">
-        <div className="flex gap-2">
-          <button
-            disabled={!canUndo}
-            onClick={() => {
-              const prev = undo();
-              if (prev)
-                localStorage.setItem("kanban_tasks", JSON.stringify(prev));
-            }}
-            className="px-3 py-1.5 text-xs font-bold rounded bg-zinc-100 dark:bg-zinc-800 disabled:opacity-40 cursor-pointer"
-          >
-            ↩ Undo
-          </button>
-          <button
-            disabled={!canRedo}
-            onClick={() => {
-              const next = redo();
-              if (next)
-                localStorage.setItem("kanban_tasks", JSON.stringify(next));
-            }}
-            className="px-3 py-1.5 text-xs font-bold rounded bg-zinc-100 dark:bg-zinc-800 disabled:opacity-40 cursor-pointer"
-          >
-            ↪ Redo
-          </button>
-        </div>
-
-        <div className="flex items-center gap-2">
-          <input
-            type="file"
-            ref={fileInputRef}
-            onChange={importBoard}
-            accept=".json"
-            className="hidden"
-          />
-          <button
-            onClick={() => fileInputRef.current?.click()}
-            className="px-4 py-2 text-xs border border-zinc-200 dark:border-zinc-700 font-bold rounded bg-white dark:bg-zinc-900 text-zinc-700 dark:text-zinc-300 hover:bg-zinc-50 dark:hover:bg-zinc-800 cursor-pointer transition-all"
-          >
-            📥 Import JSON
-          </button>
-          <button
-            onClick={exportBoard}
-            className="px-4 py-2 text-xs border border-zinc-200 dark:border-zinc-700 font-bold rounded bg-white dark:bg-zinc-900 text-zinc-700 dark:text-zinc-300 hover:bg-zinc-50 dark:hover:bg-zinc-800 cursor-pointer transition-all"
-          >
-            📤 Export JSON
-          </button>
-          <button
-            onClick={() => setIsNewTaskModalOpen(true)}
-            className="px-5 py-2.5 text-xs bg-blue-600 dark:bg-blue-500 text-white font-bold rounded-sm hover:bg-blue-700 dark:hover:bg-blue-600 transition-all cursor-pointer shadow-md flex items-center gap-1"
-          >
-            <span className="text-sm font-black">+</span> New Task
-          </button>
-        </div>
+    <div
+      onDragOver={handleDragOver}
+      onDrop={handleDrop}
+      className="flex flex-col bg-transparent w-full min-h-125 rounded-sm border border-zinc-200 dark:border-zinc-800/60 shadow-xs overflow-hidden"
+    >
+      <div
+        className={`flex items-center justify-between p-3.5 font-black uppercase tracking-wider text-sm ${getHeaderBgColor(title)}`}
+      >
+        <h3>{title}</h3>
+        <span className="text-[11px] font-black px-2 py-0.5 rounded-full bg-black/10 dark:bg-black/20 text-inherit border border-white/10">
+          {tasks.length}
+        </span>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 xl:grid-cols-5 gap-5 items-start mt-4">
-        {INITIAL_COLUMNS.map((col) => (
-          <Column
-            key={col}
-            title={col}
-            status={col}
-            tasks={tasks.filter(
-              (t) => (t.status || "TODO").toUpperCase() === col,
-            )}
-            onCardClick={setSelectedTask}
-            onTasksUpdate={syncStorage}
+      <div className="flex flex-col gap-3 p-4 overflow-y-auto h-full custom-scrollbar">
+        {visibleTasks.map((task) => (
+          <Card
+            key={task.id}
+            task={task}
+            onCardClick={onCardClick}
+            onTasksUpdate={onTasksUpdate}
           />
         ))}
 
-        <TaskModal
-          isOpen={isNewTaskModalOpen}
-          onClose={() => setIsNewTaskModalOpen(false)}
-          onAddTask={handleAddTask}
-        />
-        <TaskViewModal
-          task={selectedTask}
-          onClose={() => {
-            setSelectedTask(null);
-            syncStorage();
-          }}
-        />
+        {tasks.length > visibleCount && (
+          <button
+            type="button"
+            onClick={() => setVisibleCount((prev) => prev + 20)}
+            className="w-full py-2.5 mt-1 text-xs font-bold text-zinc-600 dark:text-zinc-400 bg-zinc-100/70 dark:bg-zinc-800/50 hover:bg-zinc-200/80 dark:hover:bg-zinc-800 border border-zinc-200/50 dark:border-zinc-700/40 rounded-sm cursor-pointer transition-all uppercase tracking-wider active:scale-[0.99]"
+          >
+            ➕ Load More ({tasks.length - visibleCount} left)
+          </button>
+        )}
+
+        {tasks.length === 0 && (
+          <div className="flex flex-col rounded-sm items-center justify-center border-2 border-dashed border-zinc-200 dark:border-zinc-800/40 p-8 h-32">
+            <span className="text-xs font-bold text-zinc-400 dark:text-zinc-600 uppercase tracking-wider">
+              Empty Column
+            </span>
+          </div>
+        )}
       </div>
     </div>
   );

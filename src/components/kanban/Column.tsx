@@ -68,7 +68,7 @@ export default function Column({
     <div
       onDragOver={handleDragOver}
       onDrop={handleDrop}
-      className="flex flex-col bg-transparent w-full min-h-125 rounded-2xl border border-zinc-200 dark:border-zinc-800/60 shadow-xs overflow-hidden"
+      className="flex flex-col bg-transparent w-full min-h-125 rounded-sm border border-zinc-200 dark:border-zinc-800/60 shadow-xs overflow-hidden"
     >
       <div
         className={`flex items-center justify-between p-3.5 font-black uppercase tracking-wider text-sm ${headerBg}`}
@@ -89,7 +89,7 @@ export default function Column({
           />
         ))}
         {tasks.length === 0 && (
-          <div className="flex flex-col items-center justify-center border-2 border-dashed border-zinc-200 dark:border-zinc-800/40 rounded-xl p-8 h-32">
+          <div className="flex flex-col rounded-sm items-center justify-center border-2 border-dashed border-zinc-200 dark:border-zinc-800/40 p-8 h-32">
             <span className="text-xs font-bold text-zinc-400 dark:text-zinc-600 uppercase tracking-wider">
               Empty Column
             </span>

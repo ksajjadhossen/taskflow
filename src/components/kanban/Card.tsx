@@ -83,12 +83,12 @@ export default function Card({ task, onCardClick, onTasksUpdate }: CardProps) {
       onClick={() => onCardClick(task)}
       draggable
       onDragStart={handleDragStart}
-      className={`group relative flex flex-col p-4 rounded-xl border transition-all duration-200 shadow-xs hover:shadow-md cursor-grab active:cursor-grabbing ${styles.cardBg}`}
+      className={`group relative flex flex-col p-4 rounded-sm border transition-all duration-200 shadow-xs hover:shadow-md cursor-grab active:cursor-grabbing ${styles.cardBg}`}
     >
       <div className="absolute top-3.5 right-3.5 opacity-0 group-hover:opacity-100 flex gap-1.5 z-10">
         <button
           onClick={handleDelete}
-          className="h-7 w-7 flex items-center justify-center rounded-lg bg-rose-500/10 hover:bg-rose-600 text-rose-600 hover:text-white transition-all cursor-pointer"
+          className="h-7 w-7 flex items-center justify-center rounded-sm bg-rose-500/10 hover:bg-rose-600 text-rose-600 hover:text-white transition-all cursor-pointer"
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -145,7 +145,7 @@ export default function Card({ task, onCardClick, onTasksUpdate }: CardProps) {
         </div>
 
         {task.dueDate && (
-          <div className="flex items-center gap-1 text-[10px] font-bold text-zinc-500 dark:text-zinc-400/85 bg-zinc-100/60 dark:bg-zinc-800/40 px-1.5 py-0.5 rounded-md border border-zinc-200/60 dark:border-zinc-700/30 shrink-0">
+          <div className="flex items-center gap-1 text-[10px] font-bold text-zinc-500 dark:text-zinc-400/85 bg-zinc-100/60 dark:bg-zinc-800/40 px-1.5 py-0.5 rounded-sm border border-zinc-200/60 dark:border-zinc-700/30 shrink-0">
             <svg
               xmlns="http://www.w3.org/2000/svg"
               fill="none"
@@ -164,7 +164,7 @@ export default function Card({ task, onCardClick, onTasksUpdate }: CardProps) {
           </div>
         )}
         <span
-          className={`text-[9px] font-black tracking-widest uppercase px-1.5 py-0.5 rounded-md border shrink-0 ${styles.badgeBg}`}
+          className={`text-[9px] font-black tracking-widest uppercase px-1.5 py-0.5 rounded-sm border shrink-0 ${styles.badgeBg}`}
         >
           {task.priority}
         </span>

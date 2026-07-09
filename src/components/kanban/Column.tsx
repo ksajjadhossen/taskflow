@@ -52,7 +52,7 @@ export default function Column({
       case "TODO":
         return "bg-blue-600 text-white";
       case "IN PROGRESS":
-        return "bg-amber-500 text-zinc-900";
+        return "bg-orange-500 text-white";
       case "REVIEW":
         return "bg-teal-500 text-white";
       case "DONE":

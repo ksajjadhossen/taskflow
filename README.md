@@ -9,85 +9,320 @@
   </a>
 </div>
 
-<br />
+<br/>
 
-A premium, production-ready, and deeply optimized task management Kanban Board built with **Next.js 14+ (App Router)** and **TypeScript**. This project implements smooth drag-and-drop interaction, granular performance optimizations, reactive state synchronization, and a fully production-grade UX architecture meeting all the requirements specified in the job task guidelines.
-
----
-
-## 🔗 Project Links
-
-- **GitHub Repository:** [https://github.com/ksajjadhossen/taskflow](https://github.com/ksajjadhossen/taskflow)
-- **Live Deployment (Vercel):** [https://taskflow-sammtech.vercel.app/](https://taskflow-sammtech.vercel.app/)
+A premium, production-ready, and highly optimized **Kanban Task Management Board** built with **Next.js 14 (App Router)** and **TypeScript**. The application provides a smooth drag-and-drop experience, powerful task management, real-time synchronization across browser tabs, and a modern responsive UI designed to meet production-level standards.
 
 ---
 
-## ✨ Features Implemented
+# 🔗 Project Links
 
-### 📦 Core Kanban Architecture
-
-- **5-Stage Progression Layout:** Seamless task movement tracking across `BACKLOG`, `TODO`, `IN PROGRESS`, `REVIEW`, and `DONE` workflow columns.
-- **Rich Card Parameters:** Detailed task tracking utilizing text descriptions, due dates, multi-select colored tags (`Bug`, `Feature`, `UI/UX`, `Refactor`), and dynamically computed priority matrices (`HIGH`, `MEDIUM`, `LOW`).
-- **Granular Editing & Oversight:** Interactive modal popups facilitating instantaneous full-field attribute updates and permanent safe-deletion commands.
-- **Search & Advanced Filtering:** Zero-lag filtering engine allowing instant searching by task title, assignee name, specific workflow labels, and priority states.
-- **Persistent Dual-Theme Engine:** Smart light/dark toggle respecting system preferences automatically and persisting user selections flawlessly.
-
-### 🔥 Premium Bonus Features (Advanced Tech)
-
-- **⚡ Real-Time Multi-Tab Synchronization:** Integrated with the **Web BroadcastChannel API** to orchestrate real-time, zero-backend state syncing across multiple browser tabs instantaneously.
-- **↩️ Built-in Undo / Redo Mechanism:** Custom state history manager mapping state nodes to rollback or re-apply drag-and-drop transitions or task deletions via hotkeys or control buttons.
-- **📱 Touch-Friendly Cross-Device Drag & Drop:** Enhanced with a continuous-gesture polyfill enabling flawless drag mechanics on smartphone and tablet touch-screens using short-press triggers.
-- **📥 Robust JSON Export & Import Engine:** Generates mobile-compatible file blobs for downloading the board layout as a `.json` configuration file or restoring deep board states back instantly.
+- **GitHub Repository:** https://github.com/ksajjadhossen/taskflow
+- **Live Demo:** https://taskflow-sammtech.vercel.app/
 
 ---
 
-## ⌨️ Keyboard Shortcuts & Hotkeys (Power-User Workflow)
+# ⚙️ Setup Instructions
 
-To enable a lightning-fast, mouse-free workflow, the system includes built-in keyboard event listeners with automatic focus traps:
+## 1. Clone the Repository
 
-| Key Command                                                  | Action Triggered                           | Context / Scope                   |
-| :----------------------------------------------------------- | :----------------------------------------- | :-------------------------------- |
-| <kbd>N</kbd>                                                 | Opens **New Task** Creation Modal          | Global (Anywhere on the board)    |
-| <kbd>Esc</kbd>                                               | Closes **Any Active Modal** (View or Edit) | Active Modal Overlay              |
-| <kbd>Ctrl</kbd> + <kbd>Z</kbd> / <kbd>⌘</kbd> + <kbd>Z</kbd> | **Undo** last drag-and-drop or action      | Global (Instant rollback)         |
-| <kbd>Ctrl</kbd> + <kbd>Y</kbd> / <kbd>⌘</kbd> + <kbd>Y</kbd> | **Redo** last undone action                | Global (Instant forward tracking) |
+```bash
+git clone https://github.com/ksajjadhossen/taskflow.git
+cd taskflow
+```
 
 ---
 
-## 🛠️ Tech Stack & Dependencies
+## 2. Install Dependencies
 
-- **Framework:** Next.js 14+ (App Router, Turbopack Compiler Engine)
-- **Language:** TypeScript (TSX)
-- **Styling:** Tailwind CSS (Utility-first configuration with custom scrollbars)
-- **State Layer:** React Local Hooks (`useState`, `useEffect`, Custom Storage Event Listeners)
+Make sure you have **Node.js v18+** installed.
+
+Using npm:
+
+```bash
+npm install
+```
+
+Using Yarn:
+
+```bash
+yarn install
+```
+
+Using pnpm:
+
+```bash
+pnpm install
+```
 
 ---
 
-## 📂 Architecture Setup
+## 3. Run Development Server
+
+Start the local development server with Turbopack.
+
+```bash
+npm run dev
+```
+
+Open your browser:
+
+```
+http://localhost:3000
+```
+
+---
+
+## 4. Build for Production
+
+```bash
+npm run build
+npm run start
+```
+
+---
+
+# ✨ Features Implemented
+
+## 📦 Core Kanban Features
+
+- ✅ 5-stage Kanban workflow
+  - BACKLOG
+  - TODO
+  - IN PROGRESS
+  - REVIEW
+  - DONE
+
+- ✅ Drag & Drop task management
+
+- ✅ Create new tasks
+
+- ✅ Edit existing tasks
+
+- ✅ Delete tasks
+
+- ✅ Rich task information
+  - Description
+  - Due Date
+  - Assignee
+  - Labels
+  - Priority
+
+- ✅ Multi-label support
+  - Bug
+  - Feature
+  - UI/UX
+  - Refactor
+
+- ✅ Priority management
+  - High
+  - Medium
+  - Low
+
+- ✅ Fast search by
+  - Task title
+  - Assignee
+  - Labels
+
+- ✅ Advanced filtering
+
+- ✅ Persistent Local Storage
+
+- ✅ Light / Dark Theme
+
+- ✅ Fully Responsive Design
+
+---
+
+# 🔥 Premium Bonus Features
+
+### ⚡ Real-Time Multi-Tab Synchronization
+
+Implemented using the **BroadcastChannel API** so changes made in one browser tab instantly appear in every other open tab without refreshing.
+
+---
+
+### ↩️ Undo / Redo History
+
+Custom state history management allows users to undo and redo:
+
+- Drag & Drop
+- Task Updates
+- Task Deletion
+
+using keyboard shortcuts or action buttons.
+
+---
+
+### 📱 Touch-Friendly Drag & Drop
+
+Supports mobile and tablet devices with touch gestures and long-press interactions for smooth drag-and-drop functionality.
+
+---
+
+### 📥 JSON Export & Import
+
+Users can:
+
+- Export the entire board as a JSON file
+- Restore board state by importing JSON
+
+---
+
+# 💡 Technical Decisions & Why
+
+## Next.js 14 App Router + TypeScript
+
+Chosen for:
+
+- Modern routing architecture
+- Better scalability
+- Strong type safety
+- Reduced runtime errors
+- Future maintainability
+
+---
+
+## React Hooks for State Management
+
+Instead of Redux or Zustand, the project uses lightweight custom hooks because:
+
+- Less boilerplate
+- Better readability
+- Smaller bundle size
+- Sufficient for frontend-only state
+
+---
+
+## BroadcastChannel API
+
+Instead of WebSockets or polling,
+
+BroadcastChannel provides:
+
+- Native browser support
+- Zero backend cost
+- Instant synchronization across tabs
+
+---
+
+## Custom Undo / Redo Stack
+
+Implemented using a lightweight history stack to efficiently track previous board states while keeping memory usage low.
+
+---
+
+# 🧩 Challenges Faced & How They Were Solved
+
+## 1. Mobile Drag & Drop Issues
+
+### Challenge
+
+Native HTML5 Drag and Drop behaves inconsistently on mobile devices.
+
+### Solution
+
+Implemented custom touch gesture handling with long-press support to provide a desktop-like drag-and-drop experience across smartphones and tablets.
+
+---
+
+## 2. Cross-Tab Synchronization
+
+### Challenge
+
+Updating tasks in one browser tab caused stale data in other open tabs.
+
+### Solution
+
+Integrated the BroadcastChannel API to broadcast every board state update. Other tabs listen for these events and instantly synchronize without requiring a page refresh.
+
+---
+
+## 3. Performance During Heavy Filtering
+
+### Challenge
+
+Searching and filtering large datasets caused unnecessary re-renders.
+
+### Solution
+
+Optimized selector logic and memoized computations so filtering only recalculates when relevant state changes occur.
+
+---
+
+# 🔮 Future Improvements
+
+Given additional development time, the following enhancements would be implemented:
+
+- 🔐 JWT Authentication
+- 🗄️ PostgreSQL / MongoDB backend
+- ⚡ Socket.io real-time collaboration
+- 👥 Multi-user collaborative boards
+- ✅ Sub-task checklists
+- 📊 Analytics Dashboard
+- 📈 Productivity & Burn-down charts
+- 🔔 Notifications & reminders
+- 📅 Calendar integration
+
+---
+
+# ⌨️ Keyboard Shortcuts
+
+| Shortcut             | Action              |
+| -------------------- | ------------------- |
+| **N**                | Open New Task Modal |
+| **Esc**              | Close Active Modal  |
+| **Ctrl + Z / ⌘ + Z** | Undo                |
+| **Ctrl + Y / ⌘ + Y** | Redo                |
+
+---
+
+# 🛠 Tech Stack
+
+- **Framework:** Next.js 14 (App Router)
+- **Language:** TypeScript
+- **Styling:** Tailwind CSS
+- **State Management:** React Hooks
+- **Storage:** LocalStorage
+- **Synchronization:** BroadcastChannel API
+- **Deployment:** Vercel
+
+---
+
+# 📂 Project Structure
 
 ```text
 src/
-├── app/                                # Next.js App Router core routing & layout rules
+├── app/
 ├── components/
 │   ├── kanban/
-│   │   ├── Board.tsx                   # Parent controller; synchronizes data boundaries
-│   │   ├── BoardHeader.tsx             # Renders filters, search controls, and structural actions
-│   │   ├── Card.tsx                    # Draggable task items; handles priority styles & deletion
-│   │   ├── Column.tsx                  # Droppable board columns; handles auto-height & drop events
-│   │   ├── InputField.tsx              # Reusable form field layout with standardized interface input
-│   │   ├── LabelsSelect.tsx            # Modular interface component for parsing workflow badges
-│   │   ├── OnboardingModal.tsx         # Guided overlay welcoming new users with onboarding steps
-│   │   ├── PrioritySelect.tsx          # Dedicated selection dropdown for assigning task severity
-│   │   ├── TaskModal.tsx               # Standard template injection point for task generation
-│   │   └── TaskViewModal.tsx           # Portal window for editing and visual oversight
+│   │   ├── Board.tsx
+│   │   ├── BoardHeader.tsx
+│   │   ├── Card.tsx
+│   │   ├── Column.tsx
+│   │   ├── InputField.tsx
+│   │   ├── LabelsSelect.tsx
+│   │   ├── OnboardingModal.tsx
+│   │   ├── PrioritySelect.tsx
+│   │   ├── TaskModal.tsx
+│   │   └── TaskViewModal.tsx
 │   └── shared/
-│       └── navbar.tsx                  # Main layout navigation header configuration
+│       └── Navbar.tsx
+│
 ├── hooks/
-│   ├── useBoardData.ts                 # Custom hook for layout sync, export/import & BroadcastChannel
-│   ├── useKeyboardShortcuts.ts         # Event listener hub managing system-wide keyboard macros
-│   └── useUndoRedo.ts                  # Custom state history stack tracking layout nodes
+│   ├── useBoardData.ts
+│   ├── useKeyboardShortcuts.ts
+│   └── useUndoRedo.ts
+│
 ├── lib/
-│   └── utils.ts                        # Global utility configurations and helper scripts
+│   └── utils.ts
+│
 └── types/
-    └── kanban.ts                       # Structured TypeScript type rules and interface definitions
+    └── kanban.ts
 ```
+
+---
+
+# 📄 License
+
+This project was developed as part of a Frontend Developer technical assessment and is intended for educational and portfolio purposes.

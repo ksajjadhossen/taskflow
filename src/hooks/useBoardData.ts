@@ -18,6 +18,9 @@ const DEFAULT_TASKS = [
   },
 ];
 
+const boardChannel =
+  typeof window !== "undefined" ? new BroadcastChannel("kanban_sync") : null;
+
 export function useBoardData() {
   const {
     state: tasks,
@@ -45,9 +48,24 @@ export function useBoardData() {
     loadTasks();
   }, []);
 
+  useEffect(() => {
+    const handleSync = (e: MessageEvent) => {
+      if (e.data === "sync-data") {
+        const saved = localStorage.getItem("kanban_tasks");
+        if (saved) updateState(JSON.parse(saved));
+      }
+    };
+
+    boardChannel?.addEventListener("message", handleSync);
+    return () => boardChannel?.removeEventListener("message", handleSync);
+  }, [updateState]);
+
   const syncStorage = () => {
     const saved = localStorage.getItem("kanban_tasks");
-    if (saved) updateState(JSON.parse(saved));
+    if (saved) {
+      updateState(JSON.parse(saved));
+      boardChannel?.postMessage("sync-data");
+    }
   };
 
   const handleAddTask = (newTask: any) => {
@@ -66,6 +84,7 @@ export function useBoardData() {
     const updated = [...current, taskToSave];
     localStorage.setItem("kanban_tasks", JSON.stringify(updated));
     updateState(updated);
+    boardChannel?.postMessage("sync-data");
   };
 
   const exportBoard = () => {
@@ -92,6 +111,7 @@ export function useBoardData() {
         if (Array.isArray(importedData)) {
           localStorage.setItem("kanban_tasks", JSON.stringify(importedData));
           updateState(importedData);
+          boardChannel?.postMessage("sync-data");
           alert("Board imported successfully!");
         }
       } catch {

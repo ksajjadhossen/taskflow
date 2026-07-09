@@ -5,9 +5,10 @@ import { Task } from "../../types/kanban";
 interface CardProps {
   task: Task;
   onCardClick: (task: Task) => void;
+  onTasksUpdate: () => void;
 }
 
-export default function Card({ task, onCardClick }: CardProps) {
+export default function Card({ task, onCardClick, onTasksUpdate }: CardProps) {
   const getPriorityStyles = (priority: string) => {
     switch (priority?.toUpperCase()) {
       case "HIGH":
@@ -53,12 +54,12 @@ export default function Card({ task, onCardClick }: CardProps) {
     );
     const updatedTasks = currentTasks.filter((t: any) => t.id !== task.id);
     localStorage.setItem("kanban_tasks", JSON.stringify(updatedTasks));
+    onTasksUpdate();
   };
 
   const handleDragStart = (e: React.DragEvent) => {
     e.dataTransfer.setData("text/plain", task.id);
   };
-  console.log("here is the task", task);
 
   const assigneeName = getAssigneeName();
   const avatarLetter = assigneeName.charAt(0).toUpperCase();

@@ -8,7 +8,7 @@ interface ColumnProps {
   status: string;
   tasks: Task[];
   onCardClick: (task: Task) => void;
-  onTasksUpdate?: () => void;
+  onTasksUpdate: () => void;
 }
 
 export default function Column({
@@ -38,10 +38,7 @@ export default function Column({
     });
 
     localStorage.setItem("kanban_tasks", JSON.stringify(updatedTasks));
-
-    if (onTasksUpdate) {
-      onTasksUpdate();
-    }
+    onTasksUpdate();
   };
 
   const getHeaderBgColor = (colTitle: string) => {
@@ -84,7 +81,12 @@ export default function Column({
 
       <div className="flex flex-col gap-3 p-4 overflow-y-auto h-full custom-scrollbar">
         {tasks.map((task) => (
-          <Card key={task.id} task={task} onCardClick={onCardClick} />
+          <Card
+            key={task.id}
+            task={task}
+            onCardClick={onCardClick}
+            onTasksUpdate={onTasksUpdate}
+          />
         ))}
         {tasks.length === 0 && (
           <div className="flex flex-col items-center justify-center border-2 border-dashed border-zinc-200 dark:border-zinc-800/40 rounded-xl p-8 h-32">

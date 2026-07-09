@@ -1,10 +1,11 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { Task, Priority } from "../../types/kanban";
 import Column from "./Column";
 import TaskViewModal from "./TaskViewModal";
 import TaskModal from "./TaskModal";
+import { useKeyboardShortcuts } from "../../hooks/useKeyboardShortcuts";
 
 const INITIAL_COLUMNS = ["BACKLOG", "TODO", "IN PROGRESS", "REVIEW", "DONE"];
 
@@ -73,9 +74,25 @@ export default function Board() {
     loadTasks();
   };
 
+  // ⚡ শর্টকাটের জন্য হ্যান্ডলার ফাংশন তৈরি
+  const handleNewTaskShortcut = useCallback(() => {
+    setIsNewTaskModalOpen(true);
+  }, []);
+
+  const handleCloseModalsShortcut = useCallback(() => {
+    setSelectedTask(null);
+    setIsNewTaskModalOpen(false);
+  }, []);
+
+  // ⚡ কীবোর্ড শর্টকাট হুক কল করা হলো
+  useKeyboardShortcuts({
+    onNewTask: handleNewTaskShortcut,
+    onCloseModals: handleCloseModalsShortcut,
+  });
+
   return (
     <div className="w-full">
-      {/* 💡 পরিবর্তন এখানে: flex justify-end ব্যবহার করে বাটনকে ডান দিকে নেওয়া হয়েছে */}
+      {/* 💡 পরিবর্তন এখানে: flex justify-end ব্যবহার করে বাটনকে ডান দিকে নেওয়া হয়েছে */}
       <div className="w-full mb-4 flex justify-end items-end">
         <button
           onClick={() => setIsNewTaskModalOpen(true)}

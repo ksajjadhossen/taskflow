@@ -4,7 +4,7 @@
   <a href="https://github.com/ksajjadhossen/taskflow">
     <img src="https://img.shields.io/badge/GitHub-Repository-black?style=for-the-badge&logo=github" alt="GitHub Repository" />
   </a>
-  <a href="https://taskflow-sammtech.vercel.app/">
+  <a href="https://taskflow-personal-app.vercel.app/">
     <img src="https://img.shields.io/badge/Vercel-Live%20Demo-blue?style=for-the-badge&logo=vercel" alt="Live Demo" />
   </a>
 </div>
